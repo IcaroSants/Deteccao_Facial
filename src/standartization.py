@@ -26,6 +26,14 @@ class Manipulation():
 
         return img
     
+    def __cor_gamma__(self, image):
+        gamma = 0.55
+        invGamma = 1 / gamma
+        table = [((i / 255) ** invGamma) * 255 for i in range(256)]
+        table = np.array(table, np.uint8)
+        gamma_image = cv2.LUT(image, table)
+        return gamma_image
+    
     def __normalizationZscore__(self,img):
         media = np.mean(img.flatten())
         desvio_padrao = np.std(img.flatten())
