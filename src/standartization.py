@@ -139,4 +139,30 @@ class Standartization(Manipulation):
 
         return  dataset
 
+    
+    def __getAllImagesCor_gamma__(self):
+        all_samples = self.__getPathForImages__()
+
+        images = []
+        labels = []
+        members = []
+        for sample in all_samples:
+            path = sample['path']
+            label = sample['label']
+            member = sample['pessoa']
+
+            super().__init__(path)
+            img = super().__cor_gamma__()
+            super().__del__()
+
+            images.append(img)
+            labels.append(label)
+            members.append(member)
+
+        images = np.array(images)
+        labels = np.array(labels)
+        dataset  = {'images':images, 'labels':labels,'members':members}
+
+        return  dataset
+
 
