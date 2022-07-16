@@ -14,9 +14,17 @@ class Manipulation():
         return path_for_file
     
     def __getImage__(self):
-        path_for_file = self.__getPathForFile__()
-        img = cv.imread(path_for_file)
+        #path_for_file = self.__getPathForFile__()
+        img = cv.resize(cv.imread(self.file),(224,224),interpolation = cv.INTER_AREA)
+        return img
+    
+    def __getGrayImage__(self):
+        img = self.__getImage__()
+        img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+        return img_gray
         
+    
 
     def __normalizationMinMax__(self,img):
         minimo = min(img.flatten())
@@ -26,12 +34,13 @@ class Manipulation():
 
         return img
     
-    def __cor_gamma__(self, image):
+    def __cor_gamma__(self):
+        image = self.__getImage__()
         gamma = 0.55
         invGamma = 1 / gamma
         table = [((i / 255) ** invGamma) * 255 for i in range(256)]
         table = np.array(table, np.uint8)
-        gamma_image = cv2.LUT(image, table)
+        gamma_image = cv.LUT(image, table)
         return gamma_image
     
     def __normalizationZscore__(self,img):
@@ -43,32 +52,20 @@ class Manipulation():
         return img
     
     
-    def __preProcessMinMax__(self):
-        img = self.__getImage__()
-        b,g,r = cv.split(img)
+    def  __removeBackground__(self):
+       img = self.__getImage__()
+       img_gray = self.__getGrayImage__()
 
-        new_channels = []
-        for channel in [b,g,r]:
-            norm_channel = self.__normalizationMinMax__(channel)
-            new_channels.append(norm_channel)
-        
-        norm_img = cv.merge(new_channels)
+       T, img_bin = cv.threshold(img_gray,0,255,cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
+       kernel = np.ones((7,7),np.uint8) 
+       img_bin = cv.dilate(img_bin,kernel,iterations=2)
+       img_bin = cv.erode(img_bin,kernel,iterations=2)
+       img_result = cv.bitwise_and(img,img,mask = img_bin)
 
-        return norm_img
-    
-    def __preProcessZscore__(self):
-        img = self.__getImage__()
-        b,g,r = cv.split(img)
+       return img_result 
 
-        new_channels = []
-        for channel in [b,g,r]:
-            norm_channel = self.__normalizationZscore__(channel)
-            new_channels.append(norm_channel)
-        
-        norm_img = cv.merge(new_channels)
-
-        return norm_img
-    
+    def __del__(self):
+        del(self)
 
 class Standartization(Manipulation):
     def __init__(self, datasets):
@@ -78,16 +75,68 @@ class Standartization(Manipulation):
         diretorios = os.listdir(self.dataset)
 
         all_path = []
-        for diretorio in diretorios:
-            dataset_img = glob.glob(os.path.join(self.dataset,diretorio),"*")
+        for categoria,diretorio in enumerate(diretorios):
+            path_for_diretorio = os.path.join(self.dataset,diretorio)+os.sep+"*"
+            dataset_img = glob.glob(path_for_diretorio)
             
             
             for img in dataset_img:
                 dataset = {}
                 dataset['path'] = img
-                dataset['label'] = diretorio
+                dataset['pessoa'] = diretorio
+                dataset['label'] = categoria
                 all_path.append(dataset)
 
         return all_path
     
-    
+    def __getAllImages__(self):
+        all_samples = self.__getPathForImages__()
+
+        images = []
+        labels = []
+        members = []
+        for sample in all_samples:
+            path = sample['path']
+            label = sample['label']
+            member = sample['pessoa']
+
+            super().__init__(path)
+            img = super().__getImage__()
+            super().__del__()
+
+            images.append(img)
+            labels.append(label)
+            members.append(member)
+
+        images = np.array(images)
+
+        dataset  = {'images':images, 'labels':labels,'members':members}
+
+        return  dataset
+
+    def __getAllImagesRemovedBackground__(self):
+        all_samples = self.__getPathForImages__()
+
+        images = []
+        labels = []
+        members = []
+        for sample in all_samples:
+            path = sample['path']
+            label = sample['label']
+            member = sample['pessoa']
+
+            super().__init__(path)
+            img = super().__removeBackground__()
+            super().__del__()
+
+            images.append(img)
+            labels.append(label)
+            members.append(member)
+
+        images = np.array(images)
+
+        dataset  = {'images':images, 'labels':labels,'members':members}
+
+        return  dataset
+
+
