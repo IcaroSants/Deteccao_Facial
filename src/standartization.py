@@ -43,6 +43,25 @@ class Manipulation():
         gamma_image = cv.LUT(image, table)
         return gamma_image
     
+    
+    def __detec_borda__(self):
+        image = self.__getImage__()
+        loaded_image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+        gray_image = cv2.cvtColor(loaded_image,cv2.COLOR_BGR2GRAY)
+        bordas_image = cv2.Canny(gray_image, threshold1=30, threshold2=100)
+        return bordas_image
+    
+    
+    def __clahe__(self):
+        image = self.__getImage__()
+        lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+        lab_planes = cv2.split(lab)
+        clahe = cv2.createCLAHE(clipLimit=2.0)
+        lab_planes[0] = clahe.apply(lab_planes[0])
+        lab = cv2.merge(lab_planes)
+        clahe_image = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+        return clahe_image
+    
     def __normalizationZscore__(self,img):
         media = np.mean(img.flatten())
         desvio_padrao = np.std(img.flatten())
