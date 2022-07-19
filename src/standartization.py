@@ -109,7 +109,7 @@ class Standartization(Manipulation):
             members.append(member)
 
         images = np.array(images)
-
+        labels = np.array(labels)
         dataset  = {'images':images, 'labels':labels,'members':members}
 
         return  dataset
@@ -134,7 +134,7 @@ class Standartization(Manipulation):
             members.append(member)
 
         images = np.array(images)
-
+        labels = np.array(labels)
         dataset  = {'images':images, 'labels':labels,'members':members}
 
         return  dataset
