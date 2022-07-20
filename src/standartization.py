@@ -46,20 +46,21 @@ class Manipulation():
     
     def __detec_borda__(self):
         image = self.__getImage__()
-        loaded_image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-        gray_image = cv2.cvtColor(loaded_image,cv2.COLOR_BGR2GRAY)
-        bordas_image = cv2.Canny(gray_image, threshold1=30, threshold2=100)
+        loaded_image = cv.cvtColor(image,cv.COLOR_BGR2RGB)
+        gray_image = cv.cvtColor(loaded_image,cv.COLOR_BGR2GRAY)
+        bordas_image = cv.Canny(gray_image, threshold1=30, threshold2=100)
+        bordas_image = cv.cvtColor(bordas_image,cv.COLOR_GRAY2BGR)
         return bordas_image
     
     
     def __clahe__(self):
         image = self.__getImage__()
-        lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
-        lab_planes = cv2.split(lab)
-        clahe = cv2.createCLAHE(clipLimit=2.0)
+        lab = cv.cvtColor(image, cv.COLOR_BGR2LAB)
+        lab_planes = cv.split(lab)
+        clahe = cv.createCLAHE(clipLimit=2.0)
         lab_planes[0] = clahe.apply(lab_planes[0])
-        lab = cv2.merge(lab_planes)
-        clahe_image = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+        lab = cv.merge(lab_planes)
+        clahe_image = cv.cvtColor(lab, cv.COLOR_LAB2BGR)
         return clahe_image
     
     def __normalizationZscore__(self,img):
@@ -198,6 +199,7 @@ class Standartization(Manipulation):
 
                 super().__init__(path)
                 img = super().__detec_borda__()
+                #img = np.reshape(img,(img.shape[0],img.shape[1],1))
                 super().__del__()
 
                 images.append(img)
