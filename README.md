@@ -11,7 +11,7 @@
 
 
 ### Desenvolvido pelos alunos do Squad2:
-Carlos, Ícaro, Josué e Leandro
+Carlos, Ícaro, Josué, Leandro e Pedro
 
 
 ## O Projeto
