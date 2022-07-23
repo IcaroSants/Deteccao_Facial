@@ -30,8 +30,13 @@ Projeto criado com o objetivo de apresentar, com base na criação de redes neur
 1. [Dataset](#section01)
    
 2. [Pré-processamento dos dados](#section02)
-  
 
+
+<a id='section01'></a>
+### Dataset
+Como base de dados foram utilizados 100 fotos de cada membro do grupo, formando um dataset com 500 imagens para treinamento e validação.
+
+  
 ### Pré-processamento dos dados
 
 Para os dados foram aplicados 3 técnicas de pré-processamentos de segmentação de magens com o uso da Biblioteca Opencv:
